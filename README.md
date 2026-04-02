@@ -1,81 +1,81 @@
 # 🎯 QR Code Catcher — YouTube Video QR Scanner
 
-**QR Code Catcher**, YouTube videoları ve oynatma listeleri (playlistler) içerisinde saklanmış olan **gizli QR kodları** otomatik olarak tespit edip ayıklayan web tabanlı gelişmiş bir Python aracıdır.
+**QR Code Catcher** is an advanced, web-based Python tool that automatically detects and extracts **hidden QR codes** embedded within YouTube videos and playlists.
 
-Modern "Glassmorphism" tasarıma sahip web arayüzü ve yüksek performanslı tarama motoru ile binlerce frame'i saniyeler içinde analiz eder.
-
----
-
-## ✨ Özellikler
-
-- **Oynatma Listesi (Playlist) Desteği:** Tek bir link vererek `yt-dlp` arka planıyla 100'lerce videoyu sıraya alabilir ve kesintisiz taratabilirsiniz.
-- **Multithreading ile Yüksek Hız:** Video üzerinde 4 farklı thread ile eşzamanlı frame taraması yapılır.
-- **Sıfır Yanlış Pozitif (Strict Validation):** Barkodlar (EAN/UPC), rasgele kare pikseller reddedilir. Polygon analizi ve printable string oranıyla sahte sonuçlar engellenir.
-- **Gerçek Zamanlı UI & SSE:** Web arayüzünde "Server-Sent Events" ile her atılan log ve yakalanan QR kod anlık olarak gösterilir. Tarama yapılırken anlık duraklatma (Pause) ve durdurma (Stop) desteklenir.
-- **Batarya ve RAM Dostu:** Atlanan frame'lerde `cap.grab()` kullanılarak "decode" masrafından kurtulunur ve tarama için orijinal 1080p frame'ler 640px genişliğine ölçeklenerek `pyzbar`a gönderilir.
-- **Çoklu Dil (i18n):** Türkçe (TR) ve İngilizce (EN) dil destekleri.
+Featuring a modern "Glassmorphism" web UI and a high-performance scanning engine, it analyzes thousands of frames in seconds.
 
 ---
 
-## 🚀 Kurulum
+## ✨ Features
 
-Projeyi çalıştırmadan önce makinenizde **Python 3.8+** ve **FFmpeg**'in yüklü olması şarttır.
+- **Playlist Support:** Provide a single link and easily queue hundreds of videos using the `yt-dlp` backend for continuous scanning.
+- **Multithreaded High-Speed Scanning:** Simultaneously scans frames across 4 different threads for a single video.
+- **Zero False Positives (Strict Validation):** Strict validation filters out standard barcodes (EAN/UPC) and random square pixels. It utilizes polygon point analysis and printable string ratio checks to eliminate fake results.
+- **Real-Time UI & SSE:** Utilizes "Server-Sent Events" to display logs and captured QR codes on the frontend instantly. Supports live pausing (Pause) and stopping (Stop) during an active scan.
+- **Battery and RAM Friendly:** Frame decoding overhead is bypassed for skipped frames using `cap.grab()`. The original 1080p frames are scaled down to 640px wide before being dispatched to `pyzbar` for scanning.
+- **Multi-Language (i18n):** Includes English (EN) and Turkish (TR) UI support.
 
-### 1. FFmpeg Yükleme
-`yt-dlp`'nin videoları hatasız indirebilmesi ve format dönüştürmesi için gereklidir:
-- **Windows:** [Gyan.dev](https://www.gyan.dev/ffmpeg/builds/) üzerinden indirip Windows `PATH` ortam değişkeninize ekleyin.
+---
+
+## 🚀 Installation
+
+Ensure you have **Python 3.8+** and **FFmpeg** installed on your machine before running the project.
+
+### 1. Install FFmpeg
+Required by `yt-dlp` to download and convert video streams properly.
+- **Windows:** Download from [Gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and add it to your Windows `PATH` environment variable.
 - **Mac:** `brew install ffmpeg`
 - **Linux:** `sudo apt install ffmpeg`
 
-### 2. Projeyi Klonlama ve Kurulum
-Terminali açarak projeyi lokalinize çekin:
+### 2. Clone and Setup
+Pull the project to your local machine using the terminal:
 ```bash
 git clone https://github.com/umutsafakyalman/QrCodeCatcher.git
 cd QrCodeCatcher
 ```
 
-Gerekli Python paketlerini yükleyin:
+Install the required Python packages:
 ```bash
 pip install -r requirements.txt
 ```
-*(Paketler: Flask, yt-dlp, opencv-python, pyzbar, Pillow, numpy)*
+*(Packages include: Flask, yt-dlp, opencv-python, pyzbar, Pillow, numpy)*
 
 ---
 
-## 🕹️ Nasıl Kullanılır?
+## 🕹️ How to Use
 
-1. Kök dizindeki `app.py` dosyasını çalıştırın:
+1. Run the `app.py` script located in the root directory:
 ```bash
 python app.py
 ```
-2. Tarayıcınızı açın ve `http://127.0.0.1:5000` adresine gidin.
-3. Ekrana herhangi bir **YouTube Video** veya **Playlist** URL'sini yapıştırın.
-4. **Tarama Hassasiyeti** (Skip Frames) ayarını seçin:
-   - *Çok Yüksek (Her frame):* Tarama yavaş gerçekleşir ama 0.05 saniyelik kareleri bile yakalar.
-   - *Normal (Her 3 frame - Önerilen):* 30 fps bir videoda yaklaşık 10 fps tarama yapar. Büyük hız kazancı.
-   - *Hızlı / Çok Hızlı:* QR kod sadece videoda çok uzun (örn. 3-4 saniye) kalıyorsa seçilmelidir.
-5. **Tarama Başlat** butonuna basın.
+2. Open your web browser and navigate to `http://127.0.0.1:5000`.
+3. Paste any **YouTube Video** or **Playlist** URL into the input field.
+4. Select the **Scan Precision** (Skip Frames) setting:
+   - *Very High (Every frame):* Scans slowly but can catch QR codes that appear for only 0.05 seconds.
+   - *Normal (Every 3 frames - Recommended):* Scans at effectively ~10 fps for a 30 fps video. Provides a massive speed boost.
+   - *Fast / Very Fast:* Choose this if you know the QR code stays on screen for a long duration (e.g., 3-4 seconds).
+5. Click the **Start Scan** button.
 
-Arayüzde indirme yüzdesi, canlı taranan kareler ve yakalanan QR kod verileri belirecektir.
-
----
-
-## 🛠️ Sistem Nasıl Çalışıyor? (Teknik Mimari)
-
-Uygulamanın arka planı şu aşamalardan oluşur:
-
-1. **Bağlantı & İndirme:** API'ye gelen istek `yt-dlp`'ye paslanır. Playlistse liste çıkartılır, tek video ise geçici olarak en uygun kalitede (ör. 720p/1080p mp4) indirilerek `downloads/` klasörüne atılır.
-2. **Kare Seçimi (Frame Selection):** Opencv-Python kullanılarak video açılır. Sadece `skip_frames` periyoduna denk gelen frame'lerde asıl okuma (`cap.read()`) yapılır. Diğer boşluklardaki frame'ler tamamen decode edilmeden ibre atlatılır (`cap.grab()`).
-3. **Ön İşlem & Küçültme:** Tam çözünürlüklü okunmuş frame, CPU üstündeki barkod arama yükünü dörte birine indirmek için maksimum eni 640px olacak şekilde küçültülür.
-4. **Paralel Tespit (QR Detection):** 24 frame'lik batch'ler hazırlanır ve Python'un `ThreadPoolExecutor`'ına gönderilir. Threadler içinde:
-    - Orijinal görüntüde ZBar algoritması aranır.
-    - Bulunamazsa görüntünün konstrastı CLAHE tekniği kullanılarak patlatılır ve tekrar denenir.
-    - Tespiti yapılan nesne minimum boyuttaysa (genişliği çok küçükse) reddedilir.
-    - Tespit edilen barkod data kalitesi ölçülür (Gürültüyle gelen %20 karakterli çöp barkodlar elenir).
-5. **Raporlama:** Geçerli kabul edilen QR kodu 1280px orijinal frame üzerinden kesilir (`crop`), web kullanımına hazır bir imaj dosyasına (`.webp` veya `.jpg`) çevrilerek `static/snapshots/` klasörüne çıkarılır. Flask sunucusu bu anı direkt olarak tarayıcıdaki Client'a fırlatır (SSE Teknolojisi).
-6. **Temizlik:** Herhangi bir video tamamen taranıp bittiğinde, depolamayı sıkıştırmamak adına video `downloads/` içinden silinir.
+The UI will automatically display the download percentage, live scanned frames, and the captured QR code data.
 
 ---
 
-## Lisans
-Mevcut depo altındaki kullanım şartları geçerlidir. Katkıda bulunmak için pull request atabilirsiniz.
+## 🛠️ How It Works (Technical Architecture)
+
+The backend pipeline operates through the following stages:
+
+1. **Connection & Download:** API requests are passed to `yt-dlp`. If it's a playlist, a queue is created. If it's a single video, it is temporarily downloaded at optimal resolution (e.g., 720p/1080p mp4) to the `downloads/` specific directory.
+2. **Frame Selection:** OpenCV-Python is used to read the video. Proper decoding (`cap.read()`) is performed exclusively on the frames that meet the `skip_frames` interval constraint. Skipped frames are quickly bypassed (`cap.grab()`) without full decoding payload.
+3. **Preprocessing & Resizing:** Fully parsed frames are minified to 640px maximal width. This significantly drops the heavy payload burden off the CPU's barcode detection capabilities.
+4. **Parallel Detection (QR Detection):** The video is processed in batches (e.g., 24 frames/batch) sent through Python's `ThreadPoolExecutor`. Inside the worker threads:
+    - Attempt a standard ZBar scan on the original frame.
+    - If unreadable, aggressive CLAHE contrast boosting is applied to the image and it's tested again.
+    - Extremely tiny detected objects are instantly rejected.
+    - Data quality constraint checks run (eliminating noisy 20-character fake barcodes from random gradients).
+5. **Reporting/Extraction:** Reusable QR codes are cropped natively from the original 1280px frame and exported as user-ready images (`.jpg` or `.webp`) to the `static/snapshots/` folder. The Flask server then emits Server-Sent Events straight to the front-end browser for live display.
+6. **Cleanup Phase:** Upon scan completion or termination, the downloaded physical `.mp4` payloads inside `downloads/` are garbage-collected and permanently deleted to preserve disk space.
+
+---
+
+## License
+Provided under the current repository's applicable usage terms. Feel free to open a Pull Request if you'd like to contribute.
