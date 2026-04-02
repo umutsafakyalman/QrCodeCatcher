@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Catcher — YouTube Video QR Tarayıcı</title>
+    <meta name="description" content="YouTube videolarındaki gizli QR kodları otomatik olarak tespit edin. Video linkini yapıştırın, sistem her kareyi tarar.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header" id="app-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <rect x="2" y="2" width="14" height="14" rx="2" stroke="url(#grad)" stroke-width="2.5" fill="none"/>
+                        <rect x="24" y="2" width="14" height="14" rx="2" stroke="url(#grad)" stroke-width="2.5" fill="none"/>
+                        <rect x="2" y="24" width="14" height="14" rx="2" stroke="url(#grad)" stroke-width="2.5" fill="none"/>
+                        <rect x="6" y="6" width="6" height="6" rx="1" fill="url(#grad)"/>
+                        <rect x="28" y="6" width="6" height="6" rx="1" fill="url(#grad)"/>
+                        <rect x="6" y="28" width="6" height="6" rx="1" fill="url(#grad)"/>
+                        <circle cx="31" cy="31" r="5" stroke="url(#grad)" stroke-width="2.5" fill="none"/>
+                        <circle cx="31" cy="31" r="2" fill="url(#grad)"/>
+                        <defs>
+                            <linearGradient id="grad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#a855f7"/>
+                                <stop offset="50%" stop-color="#6366f1"/>
+                                <stop offset="100%" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="logo-title">QR Code Catcher</h1>
+                    <p class="logo-subtitle">YouTube Video QR Tarayıcı</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- URL Input Section -->
+        <section class="input-section" id="input-section">
+            <div class="glass-card input-card">
+                <div class="input-header">
+                    <div class="input-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    </div>
+                    <h2>Video veya Playlist Linkini Yapıştır</h2>
+                </div>
+                <p class="input-description">YouTube video veya playlist linkini aşağıya yapıştırın. Sistem tüm videoları indirecek, her kareyi tarayacak ve gizli QR kodları bulacak.</p>
+
+                <div class="url-input-wrapper">
+                    <input
+                        type="url"
+                        id="url-input"
+                        class="url-input"
+                        placeholder="https://www.youtube.com/watch?v=... veya playlist linki"
+                        autocomplete="off"
+                    >
+                    <button id="scan-btn" class="scan-btn" onclick="startScan()">
+                        <svg class="scan-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <span>Taramayı Başlat</span>
+                    </button>
+                </div>
+
+                <div class="settings-row">
+                    <label class="setting-label">
+                        <span class="setting-name">Tarama Hassasiyeti:</span>
+                        <select id="skip-frames" class="setting-select">
+                            <option value="1">Maksimum (Her frame)</option>
+                            <option value="2">Yüksek (Her 2 frame)</option>
+                            <option value="3" selected>Normal (Her 3 frame)</option>
+                            <option value="5">Hızlı (Her 5 frame)</option>
+                            <option value="10">Çok Hızlı (Her 10 frame)</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section class="progress-section hidden" id="progress-section">
+            <div class="glass-card progress-card">
+                <div class="progress-header">
+                    <div class="scanner-animation" id="scanner-anim">
+                        <div class="scanner-ring"></div>
+                        <div class="scanner-ring ring-2"></div>
+                        <div class="scanner-ring ring-3"></div>
+                        <div class="scanner-dot"></div>
+                    </div>
+                    <div>
+                        <h2 id="progress-title">Taranıyor...</h2>
+                        <p id="progress-subtitle" class="progress-subtitle">Video indiriliyor</p>
+                    </div>
+                    <div class="control-buttons" id="control-buttons">
+                        <button class="ctrl-btn pause-btn" id="pause-btn" onclick="togglePause()" title="Duraklat">
+                            <svg id="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16" rx="1"/>
+                                <rect x="14" y="4" width="4" height="16" rx="1"/>
+                            </svg>
+                            <svg id="play-icon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                        <button class="ctrl-btn stop-btn" id="stop-btn" onclick="stopScan()" title="Durdur">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Playlist Info Banner -->
+                <div class="playlist-banner hidden" id="playlist-banner">
+                    <div class="playlist-banner-icon">📋</div>
+                    <div class="playlist-banner-info">
+                        <span class="playlist-banner-title" id="playlist-title"></span>
+                        <span class="playlist-banner-count" id="playlist-video-count"></span>
+                    </div>
+                </div>
+
+                <!-- Video Counter -->
+                <div class="video-counter hidden" id="video-counter">
+                    <span class="video-counter-label">Video</span>
+                    <span class="video-counter-value" id="video-counter-value">1/1</span>
+                    <span class="video-counter-title" id="video-counter-title"></span>
+                </div>
+
+                <div class="video-info hidden" id="video-info">
+                    <span class="video-title" id="video-title"></span>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                        <div class="progress-glow"></div>
+                    </div>
+                    <span class="progress-pct" id="progress-pct">0%</span>
+                </div>
+
+                <div class="log-container" id="log-container">
+                    <div class="log-entries" id="log-entries"></div>
+                </div>
+
+                <!-- QR Codes Found During Scan -->
+                <div class="live-results hidden" id="live-results">
+                    <h3 class="live-results-title">
+                        <span class="pulse-dot"></span>
+                        Bulunan QR Kodlar
+                        <span class="qr-count" id="qr-count">0</span>
+                    </h3>
+                    <div class="live-qr-list" id="live-qr-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section hidden" id="results-section">
+            <div class="glass-card results-card">
+                <div class="results-header">
+                    <div class="results-icon" id="results-icon">✅</div>
+                    <div>
+                        <h2 id="results-title">Tarama Tamamlandı</h2>
+                        <p id="results-subtitle" class="results-subtitle"></p>
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-qr">0</div>
+                        <div class="stat-label">QR Kod Bulundu</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-videos">0</div>
+                        <div class="stat-label">Video Tarandı</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-frames">0</div>
+                        <div class="stat-label">Frame Tarandı</div>
+                    </div>
+                </div>
+
+                <div class="qr-results-list" id="qr-results-list"></div>
+
+                <div class="no-results hidden" id="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <p>Bu videoda QR kod bulunamadı.</p>
+                    <p class="no-results-hint">Farklı hassasiyet ayarıyla tekrar deneyin veya başka bir video linkiyle tarayın.</p>
+                </div>
+            </div>
+
+            <button class="new-scan-btn" id="new-scan-btn" onclick="resetUI()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                Yeni Tarama Başlat
+            </button>
+        </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

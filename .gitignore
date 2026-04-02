@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+downloads/
+static/snapshots/*.jpg
+!static/snapshots/.gitkeep
+.env
+venv/
+env/
+.idea/
+.vscode/
