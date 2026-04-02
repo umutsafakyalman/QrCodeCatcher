@@ -42,7 +42,11 @@
                 </div>
                 <div>
                     <h1 class="logo-title">QR Code Catcher</h1>
-                    <p class="logo-subtitle">YouTube Video QR Tarayıcı</p>
+                    <p class="logo-subtitle" data-i18n="logo_subtitle">YouTube Video QR Tarayıcı</p>
+                </div>
+                <div class="lang-toggle">
+                    <button class="lang-btn active" id="lang-tr" onclick="setLanguage('tr')">TR</button>
+                    <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
         </header>
@@ -57,38 +61,35 @@
                             <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                         </svg>
                     </div>
-                    <h2>Video veya Playlist Linkini Yapıştır</h2>
+                    <h2 data-i18n="input_title">Video veya Playlist Linkini Yapıştır</h2>
                 </div>
-                <p class="input-description">YouTube video veya playlist linkini aşağıya yapıştırın. Sistem tüm videoları indirecek, her kareyi tarayacak ve gizli QR kodları bulacak.</p>
+                <p class="input-description" data-i18n="input_desc">YouTube video veya playlist linkini aşağıya yapıştırın. Sistem tüm videoları indirecek, her kareyi tarayacak ve gizli QR kodları bulacak.</p>
 
                 <div class="url-input-wrapper">
-                    <input
-                        type="url"
-                        id="url-input"
-                        class="url-input"
-                        placeholder="https://www.youtube.com/watch?v=... veya playlist linki"
-                        autocomplete="off"
-                    >
+                    <input type="text" id="url-input" class="url-input" placeholder="https://www.youtube.com/watch?v=..." data-i18n-placeholder="input_placeholder">
                     <button id="scan-btn" class="scan-btn" onclick="startScan()">
                         <svg class="scan-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"/>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
-                        <span>Taramayı Başlat</span>
+                        <span data-i18n="scan_btn">Taramayı Başlat</span>
                     </button>
                 </div>
 
                 <div class="settings-row">
                     <label class="setting-label">
-                        <span class="setting-name">Tarama Hassasiyeti:</span>
-                        <select id="skip-frames" class="setting-select">
-                            <option value="1">Maksimum (Her frame)</option>
-                            <option value="2">Yüksek (Her 2 frame)</option>
-                            <option value="3" selected>Normal (Her 3 frame)</option>
-                            <option value="5">Hızlı (Her 5 frame)</option>
-                            <option value="10">Çok Hızlı (Her 10 frame)</option>
-                        </select>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="setting-icon" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        <span class="setting-name" data-i18n="scan_precision">Tarama Hassasiyeti:</span>
                     </label>
+                    <select id="skip-frames" class="setting-select">
+                        <option value="1" data-i18n="prec_high">Çok Yüksek (Her frame)</option>
+                        <option value="3" selected data-i18n="prec_normal">Normal (Her 3 frame)</option>
+                        <option value="5" data-i18n="prec_fast">Hızlı (Her 5 frame)</option>
+                        <option value="10" data-i18n="prec_very_fast">Çok Hızlı (Her 10 frame)</option>
+                    </select>
                 </div>
             </div>
         </section>
@@ -104,11 +105,11 @@
                         <div class="scanner-dot"></div>
                     </div>
                     <div>
-                        <h2 id="progress-title">Taranıyor...</h2>
+                        <h2 id="progress-title" data-i18n="scanning">Taranıyor...</h2>
                         <p id="progress-subtitle" class="progress-subtitle">Video indiriliyor</p>
                     </div>
                     <div class="control-buttons" id="control-buttons">
-                        <button class="ctrl-btn pause-btn" id="pause-btn" onclick="togglePause()" title="Duraklat">
+                        <button class="ctrl-btn pause-btn" id="pause-btn" onclick="togglePause()" title="Duraklat" data-i18n-title="pause">
                             <svg id="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <rect x="6" y="4" width="4" height="16" rx="1"/>
                                 <rect x="14" y="4" width="4" height="16" rx="1"/>
@@ -117,7 +118,7 @@
                                 <polygon points="5 3 19 12 5 21 5 3"/>
                             </svg>
                         </button>
-                        <button class="ctrl-btn stop-btn" id="stop-btn" onclick="stopScan()" title="Durdur">
+                        <button class="ctrl-btn stop-btn" id="stop-btn" onclick="stopScan()" title="Durdur" data-i18n-title="stop">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <rect x="4" y="4" width="16" height="16" rx="2"/>
                             </svg>
@@ -136,7 +137,7 @@
 
                 <!-- Video Counter -->
                 <div class="video-counter hidden" id="video-counter">
-                    <span class="video-counter-label">Video</span>
+                    <span class="video-counter-label" data-i18n="video_label">Video</span>
                     <span class="video-counter-value" id="video-counter-value">1/1</span>
                     <span class="video-counter-title" id="video-counter-title"></span>
                 </div>
@@ -159,11 +160,10 @@
 
                 <!-- QR Codes Found During Scan -->
                 <div class="live-results hidden" id="live-results">
-                    <h3 class="live-results-title">
-                        <span class="pulse-dot"></span>
-                        Bulunan QR Kodlar
-                        <span class="qr-count" id="qr-count">0</span>
-                    </h3>
+                    <div class="live-results-title">
+                        <div class="pulse-dot"></div>
+                        <span data-i18n="live_findings">Canlı Bulgular: </span> <span class="qr-count" id="qr-count">0</span>
+                    </div>
                     <div class="live-qr-list" id="live-qr-list"></div>
                 </div>
             </div>
@@ -174,24 +174,24 @@
             <div class="glass-card results-card">
                 <div class="results-header">
                     <div class="results-icon" id="results-icon">✅</div>
-                    <div>
-                        <h2 id="results-title">Tarama Tamamlandı</h2>
-                        <p id="results-subtitle" class="results-subtitle"></p>
+                    <div class="results-title-group">
+                        <h2 id="results-title" data-i18n="scan_complete">Tarama Tamamlandı</h2>
+                        <p id="results-subtitle" class="results-subtitle">Sonuçlar Yükleniyor...</p>
                     </div>
                 </div>
 
                 <div class="stats-grid" id="stats-grid">
                     <div class="stat-item">
-                        <div class="stat-value" id="stat-qr">0</div>
-                        <div class="stat-label">QR Kod Bulundu</div>
+                        <div class="stat-value" id="stat-count">0</div>
+                        <div class="stat-label" data-i18n="qr_found">QR KOD BULUNDU</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="stat-videos">0</div>
-                        <div class="stat-label">Video Tarandı</div>
+                        <div class="stat-label" data-i18n="scanned_videos">VİDEO TARANDI</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="stat-frames">0</div>
-                        <div class="stat-label">Frame Tarandı</div>
+                        <div class="stat-label" data-i18n="scanned_frames">FRAME TARANDI</div>
                     </div>
                 </div>
 

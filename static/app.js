@@ -10,6 +10,155 @@ let isPaused = false;
 let isPlaylist = false;
 let totalQrFound = 0;
 let currentScanId = null;
+let currentLang = 'tr';
+
+const translations = {
+    'tr': {
+        'logo_subtitle': 'YouTube Video QR Tarayıcı',
+        'input_title': 'Video veya Playlist Linkini Yapıştır',
+        'input_desc': 'YouTube video veya playlist linkini aşağıya yapıştırın. Sistem tüm videoları indirecek, her kareyi tarayacak ve gizli QR kodları bulacak.',
+        'input_placeholder': 'https://www.youtube.com/watch?v=...',
+        'scan_btn': 'Taramayı Başlat',
+        'scan_precision': 'Tarama Hassasiyeti:',
+        'prec_high': 'Çok Yüksek (Her frame)',
+        'prec_normal': 'Normal (Her 3 frame)',
+        'prec_fast': 'Hızlı (Her 5 frame)',
+        'prec_very_fast': 'Çok Hızlı (Her 10 frame)',
+        'scanning': 'Taranıyor...',
+        'pause': 'Duraklat',
+        'stop': 'Durdur',
+        'video_label': 'Video',
+        'live_findings': 'Canlı Bulgular: ',
+        'scan_complete': 'Tarama Tamamlandı',
+        'qr_found': 'QR KOD BULUNDU',
+        'scanned_videos': 'VİDEO TARANDI',
+        'scanned_frames': 'FRAME TARANDI',
+        'no_qr_found': 'Bu videoda QR kod bulunamadı.',
+        'try_again': 'Farklı hassasiyet ayarıyla tekrar deneyin veya başka bir video linkiyle tarayın.',
+        'new_scan': 'Yeni Tarama Başlat',
+        
+        // JS dynamic strings
+        'error_url': 'Bir hata oluştu',
+        'error_conn': 'Sunucuya bağlanılamadı: ',
+        'error_disconnect': 'Bağlantı kesildi',
+        'status_init': 'Link Analiz Ediliyor...',
+        'status_down_pl': 'Video İndiriliyor...',
+        'status_down': 'Video İndiriliyor...',
+        'status_scan': 'QR Kod Taranıyor...',
+        'status_pl': 'Playlist Yükleniyor...',
+        'log_playlist': (title, count) => `📋 Playlist: ${title} — ${count} video`,
+        'log_video': (num, total, title) => `📹 Video ${num}/${total}: ${title}`,
+        'paused_title': '⏸️ Duraklatıldı',
+        'stopped_title': '🛑 Tarama Durduruldu',
+        'stopped_subtitle': 'Kısmi sonuçlar gösteriliyor',
+        'results_loading': 'Sonuçlar Yükleniyor...',
+        'results_found_title': 'QR Kodlar Bulundu!',
+        'results_pl_sub': (v, q) => `${v} video tarandı, ${q} QR kod tespit edildi`,
+        'results_vi_sub': (q) => `${q} adet QR kod tespit edildi`,
+        'results_not_pl_sub': (v, f) => `${v} video, ${f} frame tarandı — QR kod bulunamadı`,
+        'results_not_vi_sub': (f) => `${f} frame tarandı, QR kod bulunamadı`,
+        'btn_copy': '📋 Kopyala',
+        'btn_copied': '✅ Kopyalandı!',
+        'btn_open': '🔗 Linki Aç',
+        'badge_noqr': 'QR Yok',
+        'badge_error': 'Hata',
+        'badge_qr': (c) => `${c} QR`,
+        'group_error': (e) => `Hata: ${e}`,
+        'group_empty': 'Bu videoda QR kod bulunamadı'
+    },
+    'en': {
+        'logo_subtitle': 'YouTube Video QR Scanner',
+        'input_title': 'Paste Video or Playlist Link',
+        'input_desc': 'Paste the YouTube video or playlist link below. The system will download all videos, scan every frame, and find hidden QR codes.',
+        'input_placeholder': 'https://www.youtube.com/watch?v=...',
+        'scan_btn': 'Start Scan',
+        'scan_precision': 'Scan Precision:',
+        'prec_high': 'Very High (Every frame)',
+        'prec_normal': 'Normal (Every 3 frames)',
+        'prec_fast': 'Fast (Every 5 frames)',
+        'prec_very_fast': 'Very Fast (Every 10 frames)',
+        'scanning': 'Scanning...',
+        'pause': 'Pause',
+        'stop': 'Stop',
+        'video_label': 'Video',
+        'live_findings': 'Live Findings: ',
+        'scan_complete': 'Scan Completed',
+        'qr_found': 'QR CODES FOUND',
+        'scanned_videos': 'VIDEOS SCANNED',
+        'scanned_frames': 'FRAMES SCANNED',
+        'no_qr_found': 'No QR codes found in this video.',
+        'try_again': 'Try again with a different precision setting or scan another video link.',
+        'new_scan': 'Start New Scan',
+
+        // JS dynamic strings
+        'error_url': 'An error occurred',
+        'error_conn': 'Could not connect to server: ',
+        'error_disconnect': 'Connection lost',
+        'status_init': 'Analyzing Link...',
+        'status_down_pl': 'Downloading Video...',
+        'status_down': 'Downloading Video...',
+        'status_scan': 'Scanning QR Codes...',
+        'status_pl': 'Loading Playlist...',
+        'log_playlist': (title, count) => `📋 Playlist: ${title} — ${count} videos`,
+        'log_video': (num, total, title) => `📹 Video ${num}/${total}: ${title}`,
+        'paused_title': '⏸️ Paused',
+        'stopped_title': '🛑 Scan Stopped',
+        'stopped_subtitle': 'Showing partial results',
+        'results_loading': 'Loading Results...',
+        'results_found_title': 'QR Codes Found!',
+        'results_pl_sub': (v, q) => `${v} videos scanned, ${q} QR codes detected`,
+        'results_vi_sub': (q) => `${q} QR codes detected`,
+        'results_not_pl_sub': (v, f) => `${v} videos, ${f} frames scanned — No QR codes found`,
+        'results_not_vi_sub': (f) => `${f} frames scanned, No QR codes found`,
+        'btn_copy': '📋 Copy',
+        'btn_copied': '✅ Copied!',
+        'btn_open': '🔗 Open Link',
+        'badge_noqr': 'No QR',
+        'badge_error': 'Error',
+        'badge_qr': (c) => `${c} QR`,
+        'group_error': (e) => `Error: ${e}`,
+        'group_empty': 'No QR codes found in this video'
+    }
+};
+
+function t(key, ...args) {
+    const val = translations[currentLang][key] || key;
+    if (typeof val === 'function') {
+        return val(...args);
+    }
+    return val;
+}
+
+function setLanguage(lang) {
+    if (!['tr', 'en'].includes(lang)) return;
+    currentLang = lang;
+    
+    // Update active button
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`lang-${lang}`).classList.add('active');
+
+    // Update static UI elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.title = t(el.getAttribute('data-i18n-title'));
+    });
+    
+    // Refresh Dynamic states if any
+    if (isScanning && !isPaused) {
+        progressTitle.textContent = t('scanning');
+    } else if (isPaused) {
+        progressTitle.textContent = t('paused_title');
+    } else if (!isScanning && scanBtn.disabled) {
+        scanBtn.querySelector('span').textContent = t('scan_btn');
+    }
+}
 
 // ========== UI Elements ==========
 const urlInput = document.getElementById('url-input');
@@ -60,7 +209,7 @@ async function startScan() {
     // UI güncelle
     scanBtn.disabled = true;
     scanBtn.classList.add('scanning');
-    scanBtn.querySelector('span').textContent = 'Taranıyor...';
+    scanBtn.querySelector('span').textContent = t('scanning');
     progressSection.classList.remove('hidden');
     resultsSection.classList.add('hidden');
     resetProgress();
@@ -75,7 +224,7 @@ async function startScan() {
         const data = await response.json();
 
         if (!response.ok) {
-            addLog(data.error || 'Bir hata oluştu', 'error');
+            addLog(data.error || t('error_url'), 'error');
             resetScanBtn();
             return;
         }
@@ -84,7 +233,7 @@ async function startScan() {
         currentScanId = data.scan_id;
         connectSSE(data.scan_id);
     } catch (err) {
-        addLog('Sunucuya bağlanılamadı: ' + err.message, 'error');
+        addLog(t('error_conn') + err.message, 'error');
         resetScanBtn();
     }
 }
@@ -104,7 +253,7 @@ function connectSSE(scanId) {
 
     eventSource.onerror = () => {
         if (isScanning) {
-            addLog('Bağlantı kesildi', 'error');
+            addLog(t('error_disconnect'), 'error');
             resetScanBtn();
         }
         eventSource.close();
@@ -161,13 +310,13 @@ function handleStatus(data) {
     progressPct.textContent = `${progress}%`;
 
     if (data.stage === 'init') {
-        progressTitle.textContent = 'Link Analiz Ediliyor...';
+        progressTitle.textContent = t('status_init');
     } else if (data.stage === 'download') {
-        progressTitle.textContent = isPlaylist ? 'Video İndiriliyor...' : 'Video İndiriliyor...';
+        progressTitle.textContent = isPlaylist ? t('status_down_pl') : t('status_down');
     } else if (data.stage === 'scan') {
-        progressTitle.textContent = 'QR Kod Taranıyor...';
+        progressTitle.textContent = t('status_scan');
     } else if (data.stage === 'playlist') {
-        progressTitle.textContent = 'Playlist Yükleniyor...';
+        progressTitle.textContent = t('status_pl');
     }
 
     progressSubtitle.textContent = data.message || '';
@@ -182,9 +331,9 @@ function handlePlaylistInfo(data) {
     if (data.is_playlist) {
         playlistBanner.classList.remove('hidden');
         playlistTitle.textContent = data.playlist_title;
-        playlistVideoCount.textContent = `${data.total_videos} video`;
+        playlistVideoCount.textContent = `${data.total_videos} ${t('video_label').toLowerCase()}`;
 
-        addLog(`📋 Playlist: ${data.playlist_title} — ${data.total_videos} video`, 'found');
+        addLog(t('log_playlist', data.playlist_title, data.total_videos), 'found');
     }
 }
 
@@ -199,7 +348,7 @@ function handleVideoStart(data) {
         progressPct.textContent = '0%';
     }
 
-    addLog(`📹 Video ${data.video_num}/${data.total_videos}: ${data.title}`);
+    addLog(t('log_video', data.video_num, data.total_videos, data.title));
 }
 
 function handleVideoInfo(data) {
@@ -259,7 +408,7 @@ function handleError(data) {
 function handlePaused(data) {
     isPaused = true;
     addLog(data.message, 'found');
-    progressTitle.textContent = '⏸️ Duraklatıldı';
+    progressTitle.textContent = t('paused_title');
 
     // UI güncelle
     document.getElementById('pause-btn').classList.add('paused');
@@ -271,7 +420,7 @@ function handlePaused(data) {
 function handleResumed(data) {
     isPaused = false;
     addLog(data.message);
-    progressTitle.textContent = 'Taranıyor...';
+    progressTitle.textContent = t('scanning');
 
     // UI güncelle
     document.getElementById('pause-btn').classList.remove('paused');
@@ -290,9 +439,9 @@ function handleStopped(data) {
     if (data.results) {
         setTimeout(() => {
             showResults(data.results);
-            document.getElementById('results-title').textContent = 'Tarama Durduruldu';
+            document.getElementById('results-title').textContent = t('stopped_title');
             document.getElementById('results-icon').textContent = '🛑';
-            document.getElementById('results-subtitle').textContent = 'Kısmi sonuçlar gösteriliyor';
+            document.getElementById('results-subtitle').textContent = t('stopped_subtitle');
         }, 500);
     } else {
         setTimeout(() => {
@@ -343,21 +492,21 @@ function showResults(results) {
 
     if (totalQR > 0) {
         document.getElementById('results-icon').textContent = '🎯';
-        document.getElementById('results-title').textContent = 'QR Kodlar Bulundu!';
+        document.getElementById('results-title').textContent = t('results_found_title');
 
         const subtitle = results.is_playlist
-            ? `${totalVideos} video tarandı, ${totalQR} QR kod tespit edildi`
-            : `${totalQR} adet QR kod tespit edildi`;
+            ? t('results_pl_sub', totalVideos, totalQR)
+            : t('results_vi_sub', totalQR);
         document.getElementById('results-subtitle').textContent = subtitle;
 
         document.getElementById('no-results').classList.add('hidden');
     } else {
         document.getElementById('results-icon').textContent = '🔍';
-        document.getElementById('results-title').textContent = 'Tarama Tamamlandı';
+        document.getElementById('results-title').textContent = t('scan_complete');
 
         const subtitle = results.is_playlist
-            ? `${totalVideos} video, ${totalFrames.toLocaleString()} frame tarandı — QR kod bulunamadı`
-            : `${totalFrames.toLocaleString()} frame tarandı, QR kod bulunamadı`;
+            ? t('results_not_pl_sub', totalVideos, totalFrames.toLocaleString())
+            : t('results_not_vi_sub', totalFrames.toLocaleString());
         document.getElementById('results-subtitle').textContent = subtitle;
 
         document.getElementById('no-results').classList.remove('hidden');
@@ -390,17 +539,17 @@ function renderPlaylistResults(videos) {
         const hasQR = qrCodes.length > 0;
 
         let badgeClass = 'no-qr';
-        let badgeText = 'QR Yok';
+        let badgeText = t('badge_noqr');
         if (hasError) {
             badgeClass = 'error';
-            badgeText = 'Hata';
+            badgeText = t('badge_error');
         } else if (hasQR) {
             badgeClass = 'has-qr';
-            badgeText = `${qrCodes.length} QR`;
+            badgeText = t('badge_qr', qrCodes.length);
         }
 
         const meta = hasError
-            ? `Hata: ${video.error}`
+            ? t('group_error', video.error)
             : `${video.scanned_frames?.toLocaleString() || '?'} frame • ${video.duration_formatted || '?'}`;
 
         group.innerHTML = `
@@ -427,7 +576,7 @@ function renderPlaylistResults(videos) {
         } else if (!hasError) {
             const emptyEl = document.createElement('div');
             emptyEl.className = 'video-group-empty';
-            emptyEl.textContent = 'Bu videoda QR kod bulunamadı';
+            emptyEl.textContent = t('group_empty');
             group.appendChild(emptyEl);
         }
 
@@ -458,10 +607,10 @@ function createQRCard(qr, index) {
                 <div class="qr-data-value">${displayData}</div>
                 <div class="qr-actions">
                     <button class="qr-action-btn" onclick="copyToClipboard('${escapeJs(qr.data)}', this)">
-                        📋 Kopyala
+                        ${t('btn_copy')}
                     </button>
                     ${isUrl ? `<button class="qr-action-btn" onclick="window.open('${escapeJs(qr.data)}', '_blank')">
-                        🔗 Linki Aç
+                        ${t('btn_open')}
                     </button>` : ''}
                 </div>
             </div>
@@ -485,7 +634,7 @@ function renderQRCards(qrCodes) {
 function resetProgress() {
     progressFill.style.width = '0%';
     progressPct.textContent = '0%';
-    progressTitle.textContent = 'Taranıyor...';
+    progressTitle.textContent = t('scanning');
     progressSubtitle.textContent = '';
     logEntries.innerHTML = '';
     videoInfo.classList.add('hidden');
@@ -514,7 +663,7 @@ function resetScanBtn() {
     isPaused = false;
     scanBtn.disabled = false;
     scanBtn.classList.remove('scanning');
-    scanBtn.querySelector('span').textContent = 'Taramayı Başlat';
+    scanBtn.querySelector('span').textContent = t('scan_btn');
 }
 
 function resetUI() {
@@ -551,7 +700,7 @@ function shakeInput() {
 function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(() => {
         const original = btn.innerHTML;
-        btn.innerHTML = '✅ Kopyalandı!';
+        btn.innerHTML = t('btn_copied');
         btn.style.borderColor = 'var(--accent-green)';
         setTimeout(() => {
             btn.innerHTML = original;
